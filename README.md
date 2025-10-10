@@ -1,4 +1,4 @@
-# 🏠 My Homelab Docker Stack
+# 🏠 My Homelab Docker Stack (Media & Automation Focus)
 
 This repository contains the Docker Compose configuration for my personal Homelab setup. It includes a variety of self-hosted services for media management, file syncing, smart home automation, and utilities.
 
