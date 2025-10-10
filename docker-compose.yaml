@@ -25,11 +25,11 @@ services:
     environment:
       # Inherit common environment variables
       <<: *common-env
-      # Specific environment variable for Homepage
-      HOMEPAGE_ALLOWED_HOSTS: homelab.lan:8080
+      # Specific URL for Homepage
+      HOMEPAGE_ALLOWED_HOSTS: your_url:8080
     volumes:
       # Configuration files
-      - /mnt/docker/config/homepage/config:/app/config
+      - /mnt/docker/homepage/config:/app/config
       # Mount main data storage for service status/monitoring
       - /mnt/data/:/mnt/storage
       # Required to monitor and manage other Docker containers (Read-only access to Docker daemon)
@@ -45,7 +45,6 @@ services:
   omni-tools:
     image: iib0011/omni-tools:latest
     container_name: omni-tools
-    # No common-env used here in original file, but can be added if needed
     ports:
       # Host Port 8086 -> Container Port 80 (Web UI)
       - "8086:80"
@@ -60,9 +59,9 @@ services:
       # Map main storage to /srv for browsing
       - /mnt/data:/srv
       # Database storage
-      - /mnt/mmc1-4/filebrowser/database:/database
+      - /mnt/docker/filebrowser/database:/database
       # Configuration files
-      - /mnt/mmc1-4/filebrowser/config:/config
+      - /mnt/docker/filebrowser/config:/config
     ports:
       # Host Port 8088 -> Container Port 80 (Web UI)
       - "8088:80"
@@ -74,9 +73,9 @@ services:
     environment: *common-env
     volumes:
       # Configuration files
-      - /mnt/mmc1-4/syncthing/config:/config
+      - /mnt/docker/syncthing/config:/config
       # Main data to be synced (syncthing's shared folder)
-      - /mnt/data/haiphan:/data1
+      - /mnt/data:/data1
     ports:
       # Web UI Port
       - "8384:8384"
@@ -114,7 +113,7 @@ services:
     environment: *common-env
     volumes:
       # Configuration files
-      - /mnt/docker/config/jellyfin/config:/config
+      - /mnt/docker/jellyfin/config:/config
       # Media library mappings
       - /mnt/data/media/tvshow:/data/tvshows
       - /mnt/data/media/movies:/data/movies
@@ -135,7 +134,7 @@ services:
       ND_LOGLEVEL: info
     volumes:
       # Configuration and database
-      - /mnt/docker/config/navidrome:/data
+      - /mnt/docker/navidrome:/data
       # Music library (Read-Only access is recommended for media files)
       - /mnt/data/media/music:/music:ro
     ports:
@@ -166,7 +165,7 @@ services:
       WEBUI_PORT: "8083"
     volumes:
       # Configuration files
-      - /mnt/docker/config/qbit:/config
+      - /mnt/docker/qbit:/config
       # Downloads folder (Shared with Radarr/Sonarr for 'hardlink' or 'move' operations)
       - /mnt/data/download:/downloads
     ports:
@@ -183,7 +182,7 @@ services:
     environment: *common-env
     volumes:
       # Configuration files
-      - /mnt/docker/config/prowlarr:/config
+      - /mnt/docker/prowlarr:/config
     ports:
       # Web UI Port
       - "9696:9696"
@@ -195,7 +194,7 @@ services:
     environment: *common-env
     volumes:
       # Configuration files
-      - /mnt/docker/config/radarr:/config
+      - /mnt/docker/radarr:/config
       # Download folder (must match qbittorrent's /downloads)
       - /mnt/data/download:/downloads
       # Final destination for movies
@@ -213,7 +212,7 @@ services:
     environment: *common-env
     volumes:
       # Configuration files
-      - /mnt/docker/config/sonarr:/config
+      - /mnt/docker/sonarr:/config
       # Download folder (must match qbittorrent's /downloads)
       - /mnt/data/download:/downloads
       # Final destination for TV shows
@@ -231,7 +230,7 @@ services:
     environment: *common-env
     volumes:
       # Configuration files
-      - /mnt/docker/config/bazarr:/config
+      - /mnt/docker/bazarr:/config
       # Movie folder (must match Radarr's /movies)
       - /mnt/data/media/movies:/movies
       # TV Show folder (must match Sonarr's /tv)
@@ -252,7 +251,7 @@ services:
     environment: *common-env
     volumes:
       # Configuration files
-      - /mnt/docker/config/hassio/config:/config
+      - /mnt/docker/hassio/config:/config
     # Required to access local network devices (e.g., discovery, broadcasts)
     network_mode: host
     restart: unless-stopped
@@ -273,9 +272,9 @@ services:
       CUPSPASSWORD: admin
     volumes:
       # Service definitions (e.g., printers)
-      - /mnt/docker/config/cups/service:/services
+      - /mnt/docker/cups/service:/services
       # Configuration files
-      - /mnt/docker/config/cups/config:/config
+      - /mnt/docker/cups/config:/config
     # Required for Avahi/AirPrint discovery
     network_mode: host
     restart: unless-stopped
