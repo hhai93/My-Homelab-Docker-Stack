@@ -1,18 +1,24 @@
 # 🏠 My Homelab Docker Stack (Media & Automation Focus)
 
-This repository contains the Docker Compose configuration for my personal Homelab setup. It includes a variety of self-hosted services for media management, file syncing, smart home automation, and utilities.
+This repository contains the Docker Compose configuration for my personal Homelab setup. It includes a variety of self-hosted services for media management, file syncing, smart home automation, and utilities, now with **Immich** for self-hosted photo backup!
 
-Feel free to explore and adapt these files for your own Homelab environment!
+This setup uses **layered Docker Compose files** and a **centralized `.env` file** for easy management and deployment of specific service groups.
 
 ---
 
 ## 💡 Introduction
 
-The `docker-compose.yml` file defines a stack of interconnected containers, orchestrated to provide various functionalities for my home network. The configuration is designed to be easily reproducible and maintainable using **Docker Compose**.
+The configuration is split into four files:
+1.  **`docker-compose.base.yml`**: Defines the shared network, common environment variables, and essential services like `watchtower`.
+2.  **`docker-compose.immich.yml`**: Contains the full Immich stack (server, microservices, Postgres, Redis).
+3.  **`docker-compose.media.yml`**: Contains media servers (`Jellyfin`, `Navidrome`) and the automated 'Arr' stack.
+4.  **`docker-compose.utility.yml`**: Contains dashboard (`Homepage`), file management, syncing, and smart home services.
 
 ### Key Configurations
-* **Common Environment Variables (`x-common-env`)**: Centralized definition for `PUID`, `PGID` (set to `1000`), and `TZ` (`Asia/Ho_Chi_Minh`).
-* **External Network**: All containers utilize an external network named `docker_homelab` for easy integration with a reverse proxy (if one is used).
+* **Centralized Environment Variables**: All configurable options (ports, PUID, PGID, volume paths, passwords) are managed in the **`.env`** file.
+* **External Network**: All containers utilize an external network named `${HOMELAB_NETWORK}` for easy integration with a reverse proxy.
+
+---
 
 ## ⚙️ Prerequisites
 
@@ -25,48 +31,59 @@ Before running this stack, you need to have:
     docker network create docker_homelab
     ```
 
-4.  **Host Directory Setup**: Ensure that the volume paths defined in the compose file (e.g., `/mnt/mmc1-4/docker/`, `/mnt/data_md0/`) exist on your host and have the correct permissions (matching the defined `PUID`/`PGID`).
+4.  **Configure .env**: **Crucially**, update the necessary variables in the `.env` file, especially `PUID`, `PGID`, `DOCKER_CONFIG_BASE`, `DATA_STORAGE_BASE`, and the **Immich database passwords**.
 
 ## 🗃️ Directory Structure and Volumes
 
-The configuration follows a common Homelab practice of separating configuration files from main media/data storage.
+Volume paths are managed via the `.env` file:
+* **`${DOCKER_CONFIG_BASE}`** (e.g., `/mnt/docker/`) for Configuration/Databases.
+* **`${DATA_STORAGE_BASE}`** (e.g., `/mnt/data/`) for Media/Downloads/Shared Files.
 
-| Host Path | Purpose | Example Services |
-| :--- | :--- | :--- |
-| `/mnt/docker/config` | **Configuration Storage** (Application settings, SQLite DBs) | `jellyfin`, `radarr`, `sonarr`, `homeassistant` |
-| `/mnt/data/` | **Main Data Storage** (Media, Downloads, Shared Files) | `jellyfin`, `navidrome`, `qbittorrent`, `filebrowser` |
-| `/var/run/docker.sock` | **Docker Daemon Access** | `homepage`, `watchtower` |
+---
 
 ## 🚀 Usage
 
-1.  Place the `docker-compose.yml` file in your desired working directory.
-2.  Review and adjust the **Volume Mappings** and **Ports** in `docker-compose.yml` to fit your specific host paths and port availability.
-3.  Deploy the stack:
+You must always include **`docker-compose.base.yml`** to ensure the common network and environment variables are loaded.
+
+1.  **Deploy the FULL Stack**:
 
     ```bash
-    docker compose up -d
+    docker compose -f docker-compose.base.yml -f docker-compose.immich.yml -f docker-compose.media.yml -f docker-compose.utility.yml up -d
     ```
 
-4.  Check the status of your running containers:
+2.  **Deploy only the Media stack and Utilities**:
 
     ```bash
-    docker compose ps
+    docker compose -f docker-compose.base.yml -f docker-compose.media.yml -f docker-compose.utility.yml up -d
     ```
+
+3.  **Stop/Remove only the Immich stack**:
+
+    ```bash
+    docker compose -f docker-compose.base.yml -f docker-compose.immich.yml down
+    ```
+
+4.  **Check the status**:
+
+    ```bash
+    docker compose -f docker-compose.base.yml -f docker-compose.media.yml ps
+    ```
+---
 
 ## 🛠️ Services Overview
 
-| Service | Category | Functionality | Host Port |
+| Service | Category | Functionality | Host Port (Default) |
 | :--- | :--- | :--- | :--- |
-| **homepage** | Dashboard | Centralized hub for accessing all self-hosted services. | `8080` |
-| **filebrowser** | File Management | Web interface for browsing and managing files. | `8088` |
-| **syncthing** | Syncing | Decentralized file synchronization between devices. | `8384` |
-| **jellyfin** | Media Server | Streaming server for movies and TV shows. | `8096` |
-| **navidrome** | Music Streaming | Web-based music server and streamer. | `4533` |
-| **qbittorrent** | Download Client | Torrent client with a powerful web UI. | `8089` |
-| **prowlarr** | Media Automation | Indexer manager for Radarr/Sonarr. | `9696` |
-| **radarr** | Media Automation | Automated movie management and downloading. | `7878` |
-| **sonarr** | Media Automation | Automated TV show management and downloading. | `8989` |
-| **bazarr** | Media Automation | Automatic subtitle downloading for media. | `6767` |
-| **watchtower** | Maintenance | Automatically checks for and updates running Docker images. | N/A |
-| **homeassistant**| Smart Home | Central hub for home automation (using `network_mode: host`). | N/A (Uses host ports) |
-| **cups** | Network Service | CUPS print server with AirPrint support (`network_mode: host`). | N/A (Uses host ports) |
+| **homepage** | Dashboard | Centralized hub for accessing services. | `${HOMEPAGE_HOST_PORT}` (8080) |
+| **immich** | Photo Backup | Self-hosted Google Photos alternative. | `${IMMICH_HOST_PORT}` (2283) |
+| **filebrowser** | File Management | Web interface for browsing and managing files. | `${FILEBROWSER_HOST_PORT}` (8088) |
+| **syncthing** | Syncing | Decentralized file synchronization. | `${SYNCTHING_HOST_PORT}` (8384) |
+| **jellyfin** | Media Server | Streaming server for movies and TV shows. | `${JELLYFIN_HOST_PORT}` (8096) |
+| **navidrome** | Music Streaming | Web-based music server and streamer. | `${NAVIDROME_HOST_PORT}` (4533) |
+| **qbittorrent** | Download Client | Torrent client with a powerful web UI. | `${QBITTORRENT_HOST_PORT_WEBUI}` (8083) |
+| **prowlarr** | Media Automation | Indexer manager for Radarr/Sonarr. | `${PROWLARR_HOST_PORT}` (9696) |
+| **radarr** | Media Automation | Automated movie management. | `${RADARR_HOST_PORT}` (7878) |
+| **sonarr** | Media Automation | Automated TV show management. | `${SONARR_HOST_PORT}` (8989) |
+| **homeassistant**| Smart Home | Central hub for home automation. | `8123` |
+| **cups**| SNetwork Service | CUPS print server with AirPrint support. | `631` |
+| **watchtower** | Maintenance | Automatically updates running Docker images. | N/A |
