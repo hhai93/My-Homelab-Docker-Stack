@@ -1,0 +1,97 @@
+version: "3.8"
+
+services:
+  # -----------------------------------------------------------
+  # HOMELAB DASHBOARD
+  # -----------------------------------------------------------
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    environment:
+      <<: *common-env
+      HOMEPAGE_ALLOWED_HOSTS: your_url:${HOMEPAGE_HOST_PORT}
+    volumes:
+      - ${DOCKER_CONFIG_BASE}/homepage/config:/app/config
+      - ${DATA_STORAGE_BASE}/:/mnt/storage
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "${HOMEPAGE_HOST_PORT}:3000"
+    restart: unless-stopped
+
+  # -----------------------------------------------------------
+  # UTILITY & FILE MANAGEMENT
+  # -----------------------------------------------------------
+  omni-tools:
+    image: iib0011/omni-tools:latest
+    container_name: omni-tools
+    ports:
+      - "8086:80"
+    restart: unless-stopped
+
+  filebrowser:
+    image: filebrowser/filebrowser:s6
+    container_name: filebrowser
+    environment: *common-env
+    volumes:
+      - ${DATA_STORAGE_BASE}:/srv
+      - ${DOCKER_CONFIG_BASE}/filebrowser/database:/database
+      - ${DOCKER_CONFIG_BASE}/filebrowser/config:/config
+    ports:
+      - "${FILEBROWSER_HOST_PORT}:80"
+    restart: unless-stopped
+
+  syncthing:
+    image: lscr.io/linuxserver/syncthing:latest
+    container_name: syncthing
+    environment: *common-env
+    volumes:
+      - ${DOCKER_CONFIG_BASE}/syncthing/config:/config
+      - ${DATA_STORAGE_BASE}:/data1
+    ports:
+      - "8384:8384"
+      - "22000:22000/tcp"
+      - "22000:22000/udp"
+      - "21027:21027/udp"
+    restart: unless-stopped
+
+  # -----------------------------------------------------------
+  # SMART HOME & NETWORK SERVICES
+  # -----------------------------------------------------------
+  homeassistant:
+    image: lscr.io/linuxserver/homeassistant:latest
+    container_name: homeassistant
+    environment: *common-env
+    volumes:
+      - ${DOCKER_CONFIG_BASE}/hassio/config:/config
+    network_mode: host
+    restart: unless-stopped
+
+  airconnect:
+    image: 1activegeek/airconnect:latest
+    container_name: airconnect
+    network_mode: host
+    restart: unless-stopped
+
+  cups:
+    image: chuckcharlie/cups-avahi-airprint:latest
+    container_name: cups
+    environment:
+      CUPSADMIN: admin
+      CUPSPASSWORD: admin
+    volumes:
+      - ${DOCKER_CONFIG_BASE}/cups/service:/services
+      - ${DOCKER_CONFIG_BASE}/cups/config:/config
+    network_mode: host
+    restart: unless-stopped
+
+# Định nghĩa lại các khối dùng chung (common-env) và network
+# để tệp này có thể tự chạy. Nó sẽ mở rộng tệp base.
+x-common-env: &common-env
+  PUID: ${PUID}
+  PGID: ${PGID}
+  TZ: ${TZ}
+
+networks:
+  default:
+    external: true
+    name: ${HOMELAB_NETWORK}
