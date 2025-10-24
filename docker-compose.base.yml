@@ -1,0 +1,28 @@
+version: "3.8"
+
+# Common Environment Variables (Shared Configuration Block)
+x-common-env: &common-env
+  PUID: ${PUID}
+  PGID: ${PGID}
+  TZ: ${TZ}
+
+# Define the network for all services
+networks:
+  default:
+    external: true
+    name: ${HOMELAB_NETWORK}
+
+services:
+  # -----------------------------------------------------------
+  # CONTAINER MAINTENANCE
+  # -----------------------------------------------------------
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    environment:
+      TZ: ${TZ}
+      WATCHTOWER_SCHEDULE: "0 0 4 * * *" # Run at 04:00 AM every day
+      WATCHTOWER_CLEANUP: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
