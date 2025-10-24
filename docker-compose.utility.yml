@@ -7,6 +7,7 @@ services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
+    env_file: .env
     environment:
       <<: *common-env
       HOMEPAGE_ALLOWED_HOSTS: your_url:${HOMEPAGE_HOST_PORT}
@@ -31,6 +32,7 @@ services:
   filebrowser:
     image: filebrowser/filebrowser:s6
     container_name: filebrowser
+    env_file: .env
     environment: *common-env
     volumes:
       - ${DATA_STORAGE_BASE}:/srv
@@ -43,12 +45,13 @@ services:
   syncthing:
     image: lscr.io/linuxserver/syncthing:latest
     container_name: syncthing
+    env_file: .env
     environment: *common-env
     volumes:
       - ${DOCKER_CONFIG_BASE}/syncthing/config:/config
       - ${DATA_STORAGE_BASE}:/data1
     ports:
-      - "8384:8384"
+      - "${SYNCTHING_HOST_PORT}:8384"
       - "22000:22000/tcp"
       - "22000:22000/udp"
       - "21027:21027/udp"
@@ -60,6 +63,7 @@ services:
   homeassistant:
     image: lscr.io/linuxserver/homeassistant:latest
     container_name: homeassistant
+    env_file: .env
     environment: *common-env
     volumes:
       - ${DOCKER_CONFIG_BASE}/hassio/config:/config
@@ -75,6 +79,7 @@ services:
   cups:
     image: chuckcharlie/cups-avahi-airprint:latest
     container_name: cups
+    env_file: .env
     environment:
       CUPSADMIN: admin
       CUPSPASSWORD: admin
@@ -83,15 +88,3 @@ services:
       - ${DOCKER_CONFIG_BASE}/cups/config:/config
     network_mode: host
     restart: unless-stopped
-
-# Định nghĩa lại các khối dùng chung (common-env) và network
-# để tệp này có thể tự chạy. Nó sẽ mở rộng tệp base.
-x-common-env: &common-env
-  PUID: ${PUID}
-  PGID: ${PGID}
-  TZ: ${TZ}
-
-networks:
-  default:
-    external: true
-    name: ${HOMELAB_NETWORK}
