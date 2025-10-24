@@ -7,22 +7,23 @@ services:
   immich-server:
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION}
     container_name: immich-server
-    # Inherit common environment variables (PUID, PGID, TZ)
+    env_file: .env
     environment:
-      <<: *common-env
+      # Inherit common environment variables
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
       # Immich Specific Env
       DB_HOSTNAME: immich-database
       DB_PASSWORD: ${IMMICH_DB_PASSWORD}
       REDIS_HOSTNAME: immich-redis
       REDIS_PASSWORD: ${IMMICH_REDIS_PASSWORD}
-      # Other Immich Configs
-      IMMICH_WEB_URL: http://localhost:${IMMICH_HOST_PORT} # Adjust if using reverse proxy
-      # ... other environment variables as needed
+      IMMICH_WEB_URL: http://localhost:${IMMICH_HOST_PORT}
     volumes:
       - ${DOCKER_CONFIG_BASE}/immich/config:/usr/src/app/config
-      - ${DATA_STORAGE_BASE}/immich/upload:/usr/src/app/upload # Main photo/video storage
+      - ${DATA_STORAGE_BASE}/immich/upload:/usr/src/app/upload
     ports:
-      - "${IMMICH_HOST_PORT}:3001" # Web/API Port
+      - "${IMMICH_HOST_PORT}:3001"
     depends_on:
       - immich-database
       - immich-redis
@@ -31,13 +32,16 @@ services:
   immich-microservices:
     image: ghcr.io/immich-app/immich-microservices:${IMMICH_VERSION}
     container_name: immich-microservices
+    env_file: .env
     environment:
-      <<: *common-env
+      # Inherit common environment variables
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
       DB_HOSTNAME: immich-database
       DB_PASSWORD: ${IMMICH_DB_PASSWORD}
       REDIS_HOSTNAME: immich-redis
       REDIS_PASSWORD: ${IMMICH_REDIS_PASSWORD}
-      # ... other environment variables as needed
     volumes:
       - ${DATA_STORAGE_BASE}/immich/upload:/usr/src/app/upload
     depends_on:
@@ -48,6 +52,7 @@ services:
   immich-database:
     image: postgres:15-alpine
     container_name: immich-database
+    env_file: .env
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${IMMICH_DB_PASSWORD}
@@ -59,21 +64,10 @@ services:
   immich-redis:
     image: redis:6.2-alpine
     container_name: immich-redis
+    env_file: .env
     environment:
       REDIS_PASSWORD: ${IMMICH_REDIS_PASSWORD}
     volumes:
       - ${DOCKER_CONFIG_BASE}/immich/redis:/data
     command: redis-server --requirepass ${IMMICH_REDIS_PASSWORD}
     restart: always
-
-# Định nghĩa lại các khối dùng chung (common-env) và network
-# để tệp này có thể tự chạy. Nó sẽ mở rộng tệp base.
-x-common-env: &common-env
-  PUID: ${PUID}
-  PGID: ${PGID}
-  TZ: ${TZ}
-
-networks:
-  default:
-    external: true
-    name: ${HOMELAB_NETWORK}
