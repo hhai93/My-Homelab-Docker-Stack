@@ -2,24 +2,47 @@ version: "3.8"
 
 services:
   # -----------------------------------------------------------
-  # AUTOMATED MEDIA MANAGEMENT (The 'Arr' Stack)
+  # MEDIA SERVER & STREAMING
   # -----------------------------------------------------------
-  qbittorrent:
-    image: linuxserver/qbittorrent:latest
-    container_name: qbittorrent
-    env_file: .env
-    environment:
-      <<: *common-env
-      WEBUI_PORT: "8083"
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    env_file: stack.env
     volumes:
-      - ${DOCKER_CONFIG_BASE}/qbit:/config
-      - ${DATA_STORAGE_BASE}/download:/downloads
+      - ${DOCKER_CONFIG_BASE}/jellyfin/config:/config
+      - ${DATA_STORAGE_BASE}/media/tvshow:/data/tvshows
+      - ${DATA_STORAGE_BASE}/media/movies:/data/movies
     ports:
-      - "${QBITTORRENT_HOST_PORT_WEBUI}:8083"
-      - "${QBITTORRENT_HOST_PORT_TRANSFERS}:6881"
-      - "${QBITTORRENT_HOST_PORT_TRANSFERS}:6881/udp"
+      - "${JELLYFIN_HOST_PORT}:8096"
     restart: unless-stopped
 
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    env_file: stack.env
+    environment:
+      ND_SCANSCHEDULE: 1h
+      ND_LOGLEVEL: info
+    volumes:
+      - ${DOCKER_CONFIG_BASE}/navidrome:/data
+      - ${DATA_STORAGE_BASE}/media/music:/music:ro
+    ports:
+      - "${NAVIDROME_HOST_PORT}:4533"
+    restart: unless-stopped
+
+  metube:
+    image: ghcr.io/alexta69/metube
+    container_name: metube
+    env_file: stack.env
+    volumes:
+      - ${DATA_STORAGE_BASE}/download:/downloads
+    ports:
+      - "${METUBE_HOST_PORT}:8081"
+    restart: unless-stopped
+
+  # -----------------------------------------------------------
+  # AUTOMATED MEDIA MANAGEMENT (The 'Arr' Stack)
+  # -----------------------------------------------------------
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
