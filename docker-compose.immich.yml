@@ -10,7 +10,6 @@ services:
     env_file: .env
     volumes:
       - ${UPLOAD_LOCATION}:/data
-      - /etc/localtime:/etc/localtime:ro
     ports:
       - '2283:2283'
     depends_on:
@@ -35,7 +34,6 @@ services:
     env_file: .env
     volumes:
       - immich-model-cache:/cache
-      - /etc/localtime:/etc/localtime:ro
     restart: always
     healthcheck:
       disable: false
@@ -50,7 +48,6 @@ services:
       test: ["CMD", "valkey-cli", "ping"]
     volumes:
       - ${DOCKER_CONFIG_BASE}/immich/redis:/data 
-      - /etc/localtime:/etc/localtime:ro
     restart: always
 
   database:
@@ -64,7 +61,6 @@ services:
       POSTGRES_INITDB_ARGS: '--data-checksums'
     volumes:
       - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
-      - /etc/localtime:/etc/localtime:ro
     shm_size: 128mb
     restart: always
 
