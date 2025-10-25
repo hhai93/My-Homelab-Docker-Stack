@@ -88,3 +88,18 @@ services:
       - ${DOCKER_CONFIG_BASE}/cups/config:/config
     network_mode: host
     restart: unless-stopped
+
+  # -----------------------------------------------------------
+  # CONTAINER AUTO UPDATE
+  # -----------------------------------------------------------
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    env_file: .env
+    environment:
+      TZ: ${TZ}
+      WATCHTOWER_SCHEDULE: "0 0 4 * * *" # Run at 04:00 AM every day
+      WATCHTOWER_CLEANUP: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
