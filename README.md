@@ -9,8 +9,8 @@ This setup uses **layered Docker Compose files** and a **centralized `.env` file
 ## 💡 Introduction
 
 The configuration is split into four files:
-1.  **`docker-compose.base.yml`**: Defines the shared network, common environment variables, and essential services like `watchtower`.
-2.  **`docker-compose.immich.yml`**: Contains the full Immich stack (server, microservices, Postgres, Redis).
+1.  **`docker-compose.base.yml`**: Defines the shared network, common environment variables`.
+2.  **`docker-compose.immich.yml`**: Contains the full Immich stack.
 3.  **`docker-compose.media.yml`**: Contains media servers (`Jellyfin`, `Navidrome`) and the automated 'Arr' stack.
 4.  **`docker-compose.utility.yml`**: Contains dashboard (`Homepage`), file management, syncing, and smart home services.
 
