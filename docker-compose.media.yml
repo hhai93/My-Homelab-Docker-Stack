@@ -65,7 +65,7 @@ services:
       - ${DATA_STORAGE_BASE}/media/movies:/movies
     ports:
       - "${RADARR_HOST_PORT}:7878"
-    depends_on: [qbittorrent, prowlarr]
+    depends_on: [prowlarr]
     restart: unless-stopped
 
   sonarr:
@@ -79,7 +79,7 @@ services:
       - ${DATA_STORAGE_BASE}/media/tvshow:/tv
     ports:
       - "${SONARR_HOST_PORT}:8989"
-    depends_on: [qbittorrent, prowlarr]
+    depends_on: [prowlarr]
     restart: unless-stopped
 
   bazarr:
