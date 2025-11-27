@@ -82,7 +82,7 @@ You must always include **`docker-compose.base.yml`** to ensure the common netwo
 | **filebrowser** | File Management | Web interface for browsing and managing files. | `${FILEBROWSER_HOST_PORT}` (8088) |
 | **syncthing** | Syncing | Decentralized file synchronization. | `${SYNCTHING_HOST_PORT}` (8384) |
 | **jellyfin** | Media Server | Streaming server for movies and TV shows. | `${JELLYFIN_HOST_PORT}` (8096) |
-| **navidrome** | Music Streaming | Web-based music server and streamer. | `${NAVIDROME_HOST_PORT}` (4533) |
+| **navidrome** | Music Server | Web-based music server and streamer. | `${NAVIDROME_HOST_PORT}` (4533) |
 | **qbittorrent** | Download Client | Torrent client with a powerful web UI. | `${QBITTORRENT_HOST_PORT_WEBUI}` (8083) |
 | **prowlarr** | Media Automation | Indexer manager for Radarr/Sonarr. | `${PROWLARR_HOST_PORT}` (9696) |
 | **radarr** | Media Automation | Automated movie management. | `${RADARR_HOST_PORT}` (7878) |
@@ -90,6 +90,7 @@ You must always include **`docker-compose.base.yml`** to ensure the common netwo
 | **n8n** | Automation | Workflow automation and integration tool. | `${N8N_HOST_PORT}` (5678) |
 | **homeassistant**| Smart Home | Central hub for home automation. | `8123` |
 | **cups**| Network Service | CUPS print server with AirPrint support. | `631` |
+| **airconnect** | Network Service | Enables AirPlay for Chromecast devices. | N/A |
 | **grafana** | Monitoring | Visualizes system and service historical data. | `${GRAFANA_HOST_PORT}` (3000) |
 | **prometheus** | Monitoring | Time-series database for metrics and alerting. | `${PROMETHEUS_HOST_PORT}` (9090) |
 | **watchtower** | Maintenance | Automatically updates running Docker images. | N/A |
