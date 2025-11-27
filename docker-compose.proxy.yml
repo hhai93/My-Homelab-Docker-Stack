@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  # -----------------------------------------------------------
+  # REVERSE PROXY & SSL MANAGEMENT (Nginx Proxy Manager)
+  # -----------------------------------------------------------
+  npm:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    env_file: .env
+    environment:
+      # Change default email and password immediately after setup!
+      # See NPM documentation for details: https://nginxproxymanager.com/
+      # DB_MYSQL_HOST: "..." # (Optional, can use default SQLite)
+    volumes:
+      - ${DOCKER_CONFIG_BASE}/npm/data:/data
+      - ${DOCKER_CONFIG_BASE}/npm/letsencrypt:/etc/letsencrypt
+    ports:
+      # Port 80 and 443 are standard for web/HTTPS access
+      - "${NPM_HOST_PORT_WEB}:80"
+      - "${NPM_HOST_PORT_SECURE}:443"
+      # NPM Admin port
+      - "${NPM_HOST_PORT_ADMIN}:81"
+    networks:
+      - homelab
+    restart: unless-stopped
+
+networks:
+  homelab:
+    name: ${HOMELAB_NETWORK}
+    external: true
