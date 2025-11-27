@@ -1,6 +1,6 @@
 # 🏠 My Homelab Docker Stack (Media & Automation Focus)
 
-This repository contains the Docker Compose configuration for my personal Homelab setup. It includes a variety of self-hosted services for media management, photo backup, file syncing, smart home, workflow automation and useful utilities.
+This repository contains the Docker Compose configuration for my personal Homelab setup. It includes a variety of self-hosted services for media management, photo backup, file syncing, smart home, workflow automation, monitoring and useful utilities.
 
 This setup uses **layered Docker Compose files** and a **centralized `.env` file** for easy management and deployment of specific service groups.
 
