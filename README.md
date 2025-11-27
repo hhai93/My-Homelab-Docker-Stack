@@ -1,6 +1,6 @@
 # 🏠 My Homelab Docker Stack (Media & Automation Focus)
 
-This repository contains the Docker Compose configuration for my personal Homelab setup. It includes a variety of self-hosted services for media management, photo backup, file syncing, smart home automation, and utilities.
+This repository contains the Docker Compose configuration for my personal Homelab setup. It includes a variety of self-hosted services for media management, photo backup, file syncing, smart home, workflow automation and utilities.
 
 This setup uses **layered Docker Compose files** and a **centralized `.env` file** for easy management and deployment of specific service groups.
 
@@ -84,6 +84,7 @@ You must always include **`docker-compose.base.yml`** to ensure the common netwo
 | **prowlarr** | Media Automation | Indexer manager for Radarr/Sonarr. | `${PROWLARR_HOST_PORT}` (9696) |
 | **radarr** | Media Automation | Automated movie management. | `${RADARR_HOST_PORT}` (7878) |
 | **sonarr** | Media Automation | Automated TV show management. | `${SONARR_HOST_PORT}` (8989) |
+| **n8n** | Automation | Workflow automation and integration tool. | `${N8N_HOST_PORT}` (5678) |
 | **homeassistant**| Smart Home | Central hub for home automation. | `8123` |
 | **cups**| SNetwork Service | CUPS print server with AirPrint support. | `631` |
 | **watchtower** | Maintenance | Automatically updates running Docker images. | N/A |
