@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+  # -----------------------------------------------------------
+  # MONITORING (Prometheus, Grafana, Exporters)
+  # -----------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    env_file: .env
+    volumes:
+      # You need to create a prometheus.yml config file here
+      - ${DOCKER_CONFIG_BASE}/prometheus/config:/etc/prometheus
+      - ${DOCKER_CONFIG_BASE}/prometheus/data:/prometheus
+    command: --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles
+    ports:
+      - "${PROMETHEUS_HOST_PORT}:9090"
+    networks:
+      - homelab
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    env_file: .env
+    volumes:
+      - ${DOCKER_CONFIG_BASE}/grafana/data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin # Change this in production
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Change this in production
+    ports:
+      - "${GRAFANA_HOST_PORT}:3000"
+    networks:
+      - homelab
+    restart: unless-stopped
+
+  node-exporter:
+    # Collects Host metrics (CPU, RAM, Disk, Network)
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    # Requires access to the Host network
+    network_mode: host
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/run/docker.sock)$
+    restart: unless-stopped
+
+  cadvisor:
+    # Collects Docker Containers metrics
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+    ports:
+      - "8080:8080" # Change this port if it conflicts with other services
+    networks:
+      - homelab
+    restart: unless-stopped
+
+networks:
+  homelab:
+    name: ${HOMELAB_NETWORK}
+    external: true
