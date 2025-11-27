@@ -95,3 +95,13 @@ services:
       - "${BAZARR_HOST_PORT}:6767"
     depends_on: [radarr, sonarr]
     restart: unless-stopped
+
+  subsyncarr:
+    image: mrorbitman/subsyncarr:latest
+    container_name: subsyncarr
+    env_file: .env
+    environment: *common-env
+    volumes:
+      - ${DATA_STORAGE_BASE}/media/movies:/movies
+      - ${DATA_STORAGE_BASE}/media/tvshow:/tv
+    restart: unless-stopped
