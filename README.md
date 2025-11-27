@@ -77,7 +77,7 @@ You must always include **`docker-compose.base.yml`** to ensure the common netwo
 | Service | Category | Functionality | Host Port (Default) |
 | :--- | :--- | :--- | :--- |
 | **homepage** | Dashboard | Centralized hub for accessing services. | `${HOMEPAGE_HOST_PORT}` (8080) |
-| **npm** | **Reverse Proxy** | **Single entry point, domain, and SSL/HTTPS management.** | `${NPM_HOST_PORT_ADMIN}` (81) |
+| **npm** | Reverse Proxy | Single entry point, domain, and SSL/HTTPS management. | `${NPM_HOST_PORT_ADMIN}` (81) |
 | **immich** | Photo Backup | Self-hosted Google Photos alternative. | `${IMMICH_HOST_PORT}` (2283) |
 | **filebrowser** | File Management | Web interface for browsing and managing files. | `${FILEBROWSER_HOST_PORT}` (8088) |
 | **syncthing** | Syncing | Decentralized file synchronization. | `${SYNCTHING_HOST_PORT}` (8384) |
@@ -89,5 +89,7 @@ You must always include **`docker-compose.base.yml`** to ensure the common netwo
 | **sonarr** | Media Automation | Automated TV show management. | `${SONARR_HOST_PORT}` (8989) |
 | **n8n** | Automation | Workflow automation and integration tool. | `${N8N_HOST_PORT}` (5678) |
 | **homeassistant**| Smart Home | Central hub for home automation. | `8123` |
-| **cups**| SNetwork Service | CUPS print server with AirPrint support. | `631` |
+| **cups**| Network Service | CUPS print server with AirPrint support. | `631` |
+| **grafana** | Monitoring | Visualizes system and service historical data. | `${GRAFANA_HOST_PORT}` (3000) |
+| **prometheus** | Monitoring | Time-series database for metrics and alerting. | `${PROMETHEUS_HOST_PORT}` (9090) |
 | **watchtower** | Maintenance | Automatically updates running Docker images. | N/A |
