@@ -12,7 +12,9 @@ The configuration is split into four files:
 1.  **`docker-compose.base.yml`**: Defines the shared network, common environment variables`.
 2.  **`docker-compose.immich.yml`**: Contains the full Immich stack.
 3.  **`docker-compose.media.yml`**: Contains media servers (`Jellyfin`, `Navidrome`) and the automated 'Arr' stack.
-4.  **`docker-compose.utility.yml`**: Contains dashboard (`Homepage`), file management, syncing, smart home, workflow automation and useful utilities .
+4.  **`docker-compose.utility.yml`**: Contains dashboard (`Homepage`), file management, syncing, smart home, workflow automation and useful utilities.
+5.  **`docker-compose.proxy.yml`**: Contains the Reverse Proxy and SSL management (`Nginx Proxy Manager`).
+6.  **`docker-compose.monitoring.yml`**: Contains the system monitoring stack (`Prometheus`, `Grafana`, `Exporters`).
 
 ### Key Configurations
 * **Centralized Environment Variables**: All configurable options (ports, PUID, PGID, volume paths, passwords) are managed in the **`.env`** file.
@@ -48,7 +50,7 @@ You must always include **`docker-compose.base.yml`** to ensure the common netwo
 1.  **Deploy the FULL Stack**:
 
     ```bash
-    docker compose -f docker-compose.base.yml -f docker-compose.immich.yml -f docker-compose.media.yml -f docker-compose.utility.yml up -d
+    docker compose -f docker-compose.base.yml -f docker-compose.immich.yml -f docker-compose.media.yml -f docker-compose.utility.yml -f docker-compose.proxy.yml -f docker-compose.monitoring.yml up -d
     ```
 
 2.  **Deploy only the Media stack and Utilities**:
@@ -75,6 +77,7 @@ You must always include **`docker-compose.base.yml`** to ensure the common netwo
 | Service | Category | Functionality | Host Port (Default) |
 | :--- | :--- | :--- | :--- |
 | **homepage** | Dashboard | Centralized hub for accessing services. | `${HOMEPAGE_HOST_PORT}` (8080) |
+| **npm** | **Reverse Proxy** | **Single entry point, domain, and SSL/HTTPS management.** | `${NPM_HOST_PORT_ADMIN}` (81) |
 | **immich** | Photo Backup | Self-hosted Google Photos alternative. | `${IMMICH_HOST_PORT}` (2283) |
 | **filebrowser** | File Management | Web interface for browsing and managing files. | `${FILEBROWSER_HOST_PORT}` (8088) |
 | **syncthing** | Syncing | Decentralized file synchronization. | `${SYNCTHING_HOST_PORT}` (8384) |
