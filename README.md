@@ -1,6 +1,6 @@
 # 🏠 My Homelab Docker Stack (Media & Automation Focus)
 
-This repository contains the Docker Compose configuration for my personal Homelab setup. It includes a variety of self-hosted services for media management, photo backup, file syncing, smart home, workflow automation and utilities.
+This repository contains the Docker Compose configuration for my personal Homelab setup. It includes a variety of self-hosted services for media management, photo backup, file syncing, smart home, workflow automation and useful utilities.
 
 This setup uses **layered Docker Compose files** and a **centralized `.env` file** for easy management and deployment of specific service groups.
 
@@ -12,7 +12,7 @@ The configuration is split into four files:
 1.  **`docker-compose.base.yml`**: Defines the shared network, common environment variables`.
 2.  **`docker-compose.immich.yml`**: Contains the full Immich stack.
 3.  **`docker-compose.media.yml`**: Contains media servers (`Jellyfin`, `Navidrome`) and the automated 'Arr' stack.
-4.  **`docker-compose.utility.yml`**: Contains dashboard (`Homepage`), file management, syncing, and smart home services.
+4.  **`docker-compose.utility.yml`**: Contains dashboard (`Homepage`), file management, syncing, smart home, workflow automation and useful utilities .
 
 ### Key Configurations
 * **Centralized Environment Variables**: All configurable options (ports, PUID, PGID, volume paths, passwords) are managed in the **`.env`** file.
