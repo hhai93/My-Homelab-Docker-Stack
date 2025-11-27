@@ -106,6 +106,20 @@ services:
     restart: unless-stopped
 
   # -----------------------------------------------------------
+  # WORKFLOW AUTOMATION
+  # -----------------------------------------------------------
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    env_file: .env
+    environment: *common-env
+    volumes:
+      - ${DOCKER_CONFIG_BASE}/n8n/config:/home/node/.n8n
+    ports:
+      - "${N8N_HOST_PORT}:5678"
+    restart: unless-stopped
+
+  # -----------------------------------------------------------
   # CONTAINER AUTO UPDATE
   # -----------------------------------------------------------
   watchtower:
